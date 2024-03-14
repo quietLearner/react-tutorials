@@ -15,3 +15,7 @@ file->preferencs->settings->format on save
 es7+ react by dsznajder
 code snippet shortcut
 ctrl+alt+r
+
+icons
+https://www.npmjs.com/package/react-icons
+npm install react-icons --save
