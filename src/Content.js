@@ -37,7 +37,7 @@ const Content = () => {
 
   const handleCheck = (id) => {
     const listItems = items.map(
-      (item) => (item.id === id ? { ...item, checked: !item.checked } : item) // I dont understand this code
+      (item) => (item.id === id ? { ...item, checked: !item.checked } : item) // this is spread operator, https://www.w3schools.com/react/react_es6_spread.asp
     );
 
     setItems(listItems);
