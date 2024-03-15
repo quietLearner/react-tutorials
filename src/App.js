@@ -3,48 +3,82 @@ import Content from "./Content";
 import Footer from "./Footer";
 
 import { useState } from "react";
+import AddItem from "./AddItem";
+import SearchItem from "./SearchItem";
 
 function App() {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      checked: true,
-      item: "One half pound bag of Cocoa Covered Almonds Unsalted",
-    },
-    {
-      id: 2,
+  //hook
+  const [items, setItems] = useState(
+    JSON.parse(localStorage.getItem("shoppinglist"))
+  );
+  const [newItem, setNewItem] = useState("");
+  const [search, setSearch] = useState("");
+
+  function setAndSaveItems(listItems) {
+    setItems(listItems);
+    localStorage.setItem("shoppinglist", JSON.stringify(listItems));
+  }
+
+  const addItem = (item) => {
+    const id = items.length ? items[items.length - 1].id + 1 : 1;
+
+    var addedItem = {
+      id,
       checked: false,
-      item: "Item 2",
-    },
-    {
-      id: 3,
-      checked: false,
-      item: "Item 3",
-    },
-  ]);
+      item,
+    };
+
+    const listItems = [...items, addedItem];
+
+    setAndSaveItems(listItems);
+  };
+
+  const getItems = () => {
+    if (!search) return items;
+
+    const filteredItems = items.filter((i) =>
+      i.item.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return filteredItems;
+  };
 
   const handleCheck = (id) => {
     const listItems = items.map(
       (item) => (item.id === id ? { ...item, checked: !item.checked } : item) // this is spread operator, https://www.w3schools.com/react/react_es6_spread.asp
     );
 
-    setItems(listItems);
-    localStorage.setItem("shoppinglist", JSON.stringify(listItems));
+    setAndSaveItems(listItems);
   };
 
   const handleDelete = (id) => {
     const listItems = items.filter((item) => item.id !== id);
 
-    setItems(listItems);
-    localStorage.setItem("shoppinglist", JSON.stringify(listItems));
+    setAndSaveItems(listItems);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!newItem) return;
+
+    addItem(newItem);
+
+    setNewItem("");
   };
 
   // jsx
   return (
     <div className="App">
       <Header title="Grocery List" />
+      <AddItem
+        newItem={newItem}
+        setNewItem={setNewItem}
+        handleSubmit={handleSubmit}
+      />
+      <SearchItem search={search} setSearch={setSearch}></SearchItem>
       <Content
-        items={items}
+        items={getItems()}
         handleCheck={handleCheck}
         handleDelete={handleDelete}
       ></Content>
