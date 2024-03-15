@@ -1,6 +1,6 @@
 import React from "react";
 
-const Header = () => {
+const Header = ({ title }) => {
   //inline css
   //   const headerStyle = {
   //     backgroundColor: "royalblue",
@@ -12,9 +12,13 @@ const Header = () => {
     // </header>
 
     <header>
-      <h1>Groceries List</h1>
+      <h1>{title}</h1>
     </header>
   );
+};
+
+Header.defaultProps = {
+  title: "List",
 };
 
 export default Header;
