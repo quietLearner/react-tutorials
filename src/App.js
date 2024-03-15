@@ -2,22 +2,27 @@ import Header from "./Header";
 import Content from "./Content";
 import Footer from "./Footer";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddItem from "./AddItem";
 import SearchItem from "./SearchItem";
 
 function App() {
   //hook
   const [items, setItems] = useState(
-    JSON.parse(localStorage.getItem("shoppinglist"))
+    JSON.parse(localStorage.getItem("shoppinglist")) || []
   );
+
   const [newItem, setNewItem] = useState("");
   const [search, setSearch] = useState("");
 
-  function setAndSaveItems(listItems) {
-    setItems(listItems);
-    localStorage.setItem("shoppinglist", JSON.stringify(listItems));
-  }
+  //console.log("before use effect");
+
+  // why not use contrcutor?
+  useEffect(() => {
+    localStorage.setItem("shoppinglist", JSON.stringify(items));
+  }, [items]); //only render when items updated
+
+  // console.log("after use effect");
 
   const addItem = (item) => {
     const id = items.length ? items[items.length - 1].id + 1 : 1;
@@ -30,7 +35,7 @@ function App() {
 
     const listItems = [...items, addedItem];
 
-    setAndSaveItems(listItems);
+    setItems(listItems);
   };
 
   const getItems = () => {
@@ -48,13 +53,13 @@ function App() {
       (item) => (item.id === id ? { ...item, checked: !item.checked } : item) // this is spread operator, https://www.w3schools.com/react/react_es6_spread.asp
     );
 
-    setAndSaveItems(listItems);
+    setItems(listItems);
   };
 
   const handleDelete = (id) => {
     const listItems = items.filter((item) => item.id !== id);
 
-    setAndSaveItems(listItems);
+    setItems(listItems);
   };
 
   const handleSubmit = (e) => {
