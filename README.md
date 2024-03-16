@@ -19,3 +19,8 @@ ctrl+alt+r
 icons
 https://www.npmjs.com/package/react-icons
 npm install react-icons --save
+
+
+https://www.npmjs.com/package/json-server
+http://localhost:3500/items
+npx json-server -p 3500 -w data/db.json
