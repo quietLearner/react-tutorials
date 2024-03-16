@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import { useState, useEffect } from "react";
 import AddItem from "./AddItem";
 import SearchItem from "./SearchItem";
+import apiRequest from "./apiRequest";
 
 function App() {
   const API_URL = "http://localhost:3500/items";
@@ -52,12 +53,12 @@ function App() {
   */
   useEffect(() => {
     //simulate time deplay to get data from outside api.
-    setTimeout(fetchItems, 5000);
+    setTimeout(fetchItems, 2000);
     //fetchItems();
   }, []); // useEffect after the initial render, you can give it an empty array as second argument.
 
   // console.log("after use effect");
-  const addItem = (item) => {
+  const addItem = async (item) => {
     const id = items.length ? items[items.length - 1].id + 1 : 1;
 
     var addedItem = {
@@ -69,6 +70,19 @@ function App() {
     const listItems = [...items, addedItem];
 
     setItems(listItems);
+
+    const postOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addedItem),
+    };
+
+    const errorMessage = await apiRequest(API_URL, postOptions);
+    if (errorMessage) {
+      setFetchError(errorMessage);
+    }
   };
 
   const getItems = () => {
@@ -81,18 +95,56 @@ function App() {
     return filteredItems;
   };
 
-  const handleCheck = (id) => {
+  //toggle item's checked value
+  const handleCheck = async (id) => {
     const listItems = items.map(
       (item) => (item.id === id ? { ...item, checked: !item.checked } : item) // this is spread operator, https://www.w3schools.com/react/react_es6_spread.asp
     );
 
     setItems(listItems);
+
+    /*
+    GET  /users - This retrieves a list of all resource entities of users.
+    GET /users/:id - This retrieves a specific user by its id.
+    POST /users - This creates a new user.
+    PUT /users/:id - This updates a user based on a specified id.
+    DELETE /users/:id - This deletes a user based on the specified id.
+    */
+
+    // if item's checkbox is clicked, update the checked field in db.json
+    const myItem = listItems.filter((item) => item.id === id);
+    const updateOptions = {
+      method: "PATCH", //"PUT", do not use put, it will remove other fields
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ checked: myItem[0].checked }),
+    };
+    const reqUrl = `${API_URL}/${id}`;
+    const result = await apiRequest(reqUrl, updateOptions);
+    if (result) setFetchError(result);
+    if (result) {
+      setFetchError(result);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const listItems = items.filter((item) => item.id !== id);
 
     setItems(listItems);
+
+    const deleteOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const reqUrl = `${API_URL}/${id}`;
+    const result = await apiRequest(reqUrl, deleteOptions);
+    if (result) setFetchError(result);
+    if (result) {
+      setFetchError(result);
+    }
   };
 
   const handleSubmit = (e) => {
